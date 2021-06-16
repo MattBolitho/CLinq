@@ -56,17 +56,31 @@ export template <typename TElement>
 class CLinqCollection
 {
     public:
-        using size_type = int32_t;
         using value_type = TElement;
+        using size_type = std::vector<TElement>::size_type;
 
         using iterator = std::vector<TElement>::iterator;
         using const_iterator = std::vector<TElement>::const_iterator;
         using reverse_iterator = std::vector<TElement>::reverse_iterator;
 
         /// Initializes a new instance of the CLinqCollection class.
+        explicit CLinqCollection() noexcept
+            : _elements(std::vector<TElement>())
+        {
+        }
+
+        /// Initializes a new instance of the CLinqCollection class.
         /// @param elements The initial elements.
         explicit CLinqCollection(std::vector<TElement> const& elements) noexcept
             : _elements(elements)
+        {
+        }
+
+        /// Initializes a new instance of the CLinqCollection class.
+        /// @param memory A block of memory to copy values from.
+        /// @param numberOfElements The number of elements to copy.
+        explicit CLinqCollection(TElement* const memory, size_type numberOfElements) noexcept
+            : _elements(std::vector<TElement>(memory, memory + numberOfElements))
         {
         }
 
@@ -81,6 +95,57 @@ class CLinqCollection
             {
                 _elements.emplace_back(element);
             }
+        }
+
+        /// Gets a reference to the element at a given index of the collection.
+        /// @param i The index.
+        /// @returns A reference to the element at a given index of the collection.
+        TElement& operator[](size_type const i)
+        {
+            return _elements[i];
+        }
+
+        /// Gets a const reference to the element at a given index of the collection.
+        /// @param i The index.
+        /// @returns A const reference to the element at a given index of the collection.
+        TElement const& operator[](size_type const i) const
+        {
+            return _elements[i];
+        }
+
+        /// Spaceship operator.
+        /// @param collection The collection to compare to.
+        /// @returns An ordering comparing this instance and the given collection.
+        auto operator<=>(CLinqCollection<TElement> const&) const = default;
+
+        /// Concatenates this collection with the given collection and returns the result.
+        /// @param collection The collection.
+        /// @returns This instance concatenated with the given collection.
+        CLinqCollection<TElement> operator+(CLinqCollection<TElement> const& collection) const noexcept
+        {
+            auto newSize = _elements.size() + collection._elements.size();
+            auto newElements = std::vector<TElement>(newSize);
+
+            for (auto i = 0; i < _elements.size(); ++i)
+            {
+                newElements[i] = _elements[i];
+            }
+
+            size_type index = 0;
+            for (auto i = _elements.size(); i < newSize; ++i)
+            {
+                newElements[i] = collection._elements[index];
+                ++index;
+            }
+
+            return CLinqCollection<TElement>(newElements);
+        }
+
+        /// Gets an empty collection.
+        /// @return An empty collection.
+        static CLinqCollection<TElement> Empty()
+        {
+            return CLinqCollection<TElement>();
         }
 
         /// Gets the iterator at the start of the collection.
@@ -105,6 +170,13 @@ class CLinqCollection
         const_iterator cend() const noexcept
         {
             return _elements.cend();
+        }
+
+        /// Gets the number of elements in the collection.
+        /// @returns The number of elements in the collection.
+        size_type Count() const noexcept
+        {
+            return _elements.size();
         }
 
     private:
