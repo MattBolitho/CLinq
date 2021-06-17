@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="clinq.Tests.cpp">
+    <ClCompile Include="CLinq.Tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\CLinq\CLinq.ixx">

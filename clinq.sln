@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31321.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "clinq.Tests", "clinq.Tests\clinq.Tests.vcxproj", "{F9BFC3A2-B1C0-48C4-9010-1D45E099E1B9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLinq.Tests", "CLinq.Tests\CLinq.Tests.vcxproj", "{F9BFC3A2-B1C0-48C4-9010-1D45E099E1B9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLinq", "CLinq\CLinq.vcxproj", "{7D7545A7-8D8C-45F3-8D85-BF37CDA71B28}"
 EndProject
