@@ -292,7 +292,7 @@ class CLinqCollection
         /// @returns True if the set contains the given element, false otherwise.
         bool Contains(TElement const& element) const
         {
-            return std::find(_elements.begin(), _elements.end(), element) != _elements.end();
+            return VectorContains(_elements, element);
         }
 
         /// Gets the number of elements in the collection.
@@ -318,6 +318,23 @@ class CLinqCollection
             }
 
             return count;
+        }
+
+        /// Gets the distinct elements of the collection.
+        /// @returns Gets the distinct elements of the collection.
+        CLinqCollection<TElement> Distinct() const
+        {
+            auto newElements = std::vector<TElement>();
+
+            for (auto& element : _elements)
+            {
+                if (!VectorContains(newElements, element))
+                {
+                    newElements.emplace_back(element);
+                }
+            }
+
+            return CLinqCollection<TElement>(newElements);
         }
 
         /// Gets a const reference to the first element in the collection.
@@ -346,6 +363,15 @@ class CLinqCollection
             auto newElements = _elements;
             newElements.emplace(newElements.begin(), element);
 
+            return CLinqCollection<TElement>(newElements);
+        }
+
+        /// Gets the collection in reverse order.
+        /// @returns The collection in reverse order.
+        CLinqCollection<TElement> Reverse() const
+        {
+            auto newElements = _elements;
+            std::reverse(newElements.begin(), newElements.end());
             return CLinqCollection<TElement>(newElements);
         }
 
@@ -456,6 +482,12 @@ class CLinqCollection
 
     private:
         std::vector<TElement> _elements;
+
+        template <typename T>
+        static bool VectorContains(std::vector<T> const& vector, T const& value)
+        {
+            return std::find(vector.begin(), vector.end(), value) != vector.end();
+        }
 
         void ThrowIfOutOfRange(size_type const index) const
         {

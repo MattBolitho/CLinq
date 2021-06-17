@@ -620,3 +620,41 @@ SCENARIO("CLinqCollections can check for element existence")
         }
     }
 }
+
+SCENARIO("ClinqCollection can generate distinct elements")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>(std::vector<int>{1, 2, 1, 1, 1, 2, 2});
+        auto expected = CLinqCollection<int>(std::vector<int>{1, 2});
+
+        WHEN("Distinct called")
+        {
+            auto distinct = collection.Distinct();
+
+            THEN("Distinct elements generated")
+            {
+                REQUIRE(expected == distinct);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can be reversed")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>(std::vector<int>{1, 2, 3, 4});
+        auto expected = CLinqCollection<int>(std::vector<int>{4, 3, 2, 1});
+
+        WHEN("The collection is reversed")
+        {
+            auto reversed = collection.Reverse();
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == reversed);
+            }
+        }
+    }
+}
