@@ -533,3 +533,43 @@ SCENARIO("CLinqCollections can be projected to maps")
         }
     }
 }
+
+SCENARIO("CLinqCollection elements can be projected to a new sequence")
+{
+    GIVEN("A collection and projection function")
+    {
+        auto collection = CLinqCollection<int>(std::vector<int>{1, 2, 3, 4});
+        auto expected = CLinqCollection<int>(std::vector<int>{2, 4, 6, 8});
+        auto projectionFunction = [](int const i){ return i * 2; };
+
+        WHEN("The elements are projected to a new sequence")
+        {
+            auto projectedCollection = collection.Select<int>(projectionFunction);
+
+            THEN("The expected collection is returned")
+            {
+                REQUIRE(expected == projectedCollection);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollection elements can be filtered to a new sequence")
+{
+    GIVEN("A collection and filter function")
+    {
+        auto collection = CLinqCollection<int>(std::vector<int>{1, 2, 3, 4});
+        auto expected = CLinqCollection<int>(std::vector<int>{1, 2});
+        auto filterFunction = [](int const i) { return i < 3; };
+
+        WHEN("The elements are filtered to a new sequence")
+        {
+            auto filteredCollection = collection.Where(filterFunction);
+
+            THEN("The expected collection is returned")
+            {
+                REQUIRE(expected == filteredCollection);
+            }
+        }
+    }
+}

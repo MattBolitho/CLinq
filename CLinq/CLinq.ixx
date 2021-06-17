@@ -340,6 +340,41 @@ class CLinqCollection
             return CLinqCollection<TElement>(newElements);
         }
 
+        /// Projects each element to a new sequence using the projection function.
+        /// @tparam TProjection The type to project the elements to.
+        /// @param projectionFunction The projection function/
+        /// @returns Each element projected into a new sequence.
+        template <typename TProjection>
+        CLinqCollection<TProjection> Select(ProjectionFunction<TProjection> const& projectionFunction) const
+        {
+            auto newElements = std::vector<TProjection>(_elements.size());
+
+            for (size_type i = 0; i < _elements.size(); ++i)
+            {
+                newElements[i] = projectionFunction(_elements[i]);
+            }
+
+            return CLinqCollection<TProjection>(newElements);
+        }
+
+        /// Gets a collection of elements from the collection that match the match function.
+        /// @param matchFunction The match function/
+        /// @returns A collection of elements from the collection that match the match function.
+        CLinqCollection<TElement> Where(MatchFunction const& matchFunction) const
+        {
+            auto newElements = std::vector<TElement>();
+
+            for (auto& element : _elements)
+            {
+                if (matchFunction(element))
+                {
+                    newElements.emplace_back(element);
+                }
+            }
+
+            return CLinqCollection<TElement>(newElements);
+        }
+
         /// Gets the elements in the collection as a vector.
         /// @returns The elements in the collection as a vector.
         std::vector<TElement> ToVector() const noexcept
