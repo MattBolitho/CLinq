@@ -298,3 +298,104 @@ SCENARIO("CLinqCollections can be get the number of elements contained within")
         }
     }
 }
+
+SCENARIO("CLinqCollections can check if a given value matches a function")
+{
+    GIVEN("A nonempty collection")
+    {
+        auto const elements = std::vector<int>{ 1,2,3 };
+        auto collection = CLinqCollection<int>(elements);
+
+        WHEN("Matching value exists")
+        {
+            auto matchFunction = [](int const i) { return i == 1; };
+
+            THEN("true is returned")
+            {
+                REQUIRE(collection.Any(matchFunction));
+            }
+        }
+
+        WHEN("Matching value exists")
+        {
+            auto matchFunction = [](int const i) { return i == INT64_MIN; };
+
+            THEN("false is returned")
+            {
+                REQUIRE_FALSE(collection.Any(matchFunction));
+            }
+        }
+    }
+
+    GIVEN("An empty collection")
+    {
+        auto collection = CLinqCollection<int>::Empty();
+
+        THEN("false is returned")
+        {
+            REQUIRE_FALSE(collection.Any([](int const i) { return i == 1; }));
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can check if any values exist")
+{
+    GIVEN("A nonempty collection")
+    {
+        auto collection = CLinqCollection<int>(std::vector<int>{ 1, 2, 3 });
+
+        THEN("true is returned")
+        {
+            REQUIRE(collection.Any());
+        }
+    }
+
+    GIVEN("An empty collection")
+    {
+        auto collection = CLinqCollection<int>::Empty();
+
+        THEN("false is returned")
+        {
+            REQUIRE_FALSE(collection.Any());
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can check if all values match a function")
+{
+    GIVEN("A nonempty collection")
+    {
+        auto const elements = std::vector<int>{ 1,2,3 };
+        auto collection = CLinqCollection<int>(elements);
+
+        WHEN("All values match")
+        {
+            auto matchFunction = [](int const i) { return i > 0; };
+
+            THEN("true is returned")
+            {
+                REQUIRE(collection.All(matchFunction));
+            }
+        }
+
+        WHEN("Some values don't match")
+        {
+            auto matchFunction = [](int const i) { return i % 2 == 1; };
+
+            THEN("false is returned")
+            {
+                REQUIRE_FALSE(collection.All(matchFunction));
+            }
+        }
+    }
+
+    GIVEN("An empty collection")
+    {
+        auto collection = CLinqCollection<int>::Empty();
+
+        THEN("false is returned")
+        {
+            REQUIRE(collection.All([](int const i) { return i == 1; }));
+        }
+    }
+}

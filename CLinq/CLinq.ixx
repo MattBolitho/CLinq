@@ -176,6 +176,48 @@ class CLinqCollection
             return _elements.cend();
         }
 
+        /// Checks that every element in the collection matches the given match function.
+        /// @param matchFunction The match function.
+        /// @returns True if every element in the collection matches the given match
+        /// function, false otherwise.
+        bool All(MatchFunction const& matchFunction) const noexcept
+        {
+            for (auto& element : _elements)
+            {
+                if (!matchFunction(element))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// Checks if the collection contains any element.
+        /// @returns True if the collection contains any element, false otherwise.
+        bool Any() const noexcept
+        {
+            return !_elements.empty();
+        }
+
+        /// Checks if the collection contains any element that matches the
+        /// given function.
+        /// @param matchFunction The match function.
+        /// @returns True if the collection contains any element that matches
+        /// the given function, false otherwise.
+        bool Any(MatchFunction const& matchFunction) const noexcept
+        {
+            for (auto& element : _elements)
+            {
+                if (matchFunction(element))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// Gets a const reference to the element at given index in the collection.
         /// @param index The index.
         /// @returns A const reference to the element at given index in the collection.

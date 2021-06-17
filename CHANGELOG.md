@@ -9,3 +9,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Adds `CLinqCollection<T>` containing:
     - `const` and non `const` iterators.
     - Operators for comparisons, indexing and concatenation.
+    - Positional access methods `At`, `First`, `Last`.
+    - Predicate methods `Any` and `All`.
