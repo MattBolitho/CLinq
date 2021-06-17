@@ -5,6 +5,7 @@ module;
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <initializer_list>
 #include <concepts>
 #include <type_traits>
 #include <stdexcept>
@@ -14,6 +15,7 @@ module;
 #include <set>
 #include <map>
 #include <unordered_map>
+#include <type_traits>
 export module CLinq;
 
 /// Checks if the given type is iterable. By default, this will be false.
@@ -78,14 +80,20 @@ class CLinqCollection
         using ProjectionFunction = std::function<TProjection(TElement)>;
 
         /// Initializes a new instance of the CLinqCollection class.
-        explicit CLinqCollection() noexcept
+        CLinqCollection() noexcept
             : _elements(std::vector<TElement>())
         {
         }
 
         /// Initializes a new instance of the CLinqCollection class.
+        CLinqCollection(std::initializer_list<TElement> const& elements) noexcept
+            : _elements(std::vector<TElement>(elements.begin(), elements.end()))
+        {
+        }
+
+        /// Initializes a new instance of the CLinqCollection class.
         /// @param elements The initial elements.
-        explicit CLinqCollection(std::vector<TElement> const& elements) noexcept
+        CLinqCollection(std::vector<TElement> const& elements) noexcept
             : _elements(elements)
         {
         }
@@ -286,6 +294,14 @@ class CLinqCollection
             return *this + collection;
         }
 
+        /// Checks whether or not the collection contains the given element.
+        /// @param element The element to find.
+        /// @returns True if the set contains the given element, false otherwise.
+        bool Contains(TElement const& element) const
+        {
+            return VectorContains(_elements, element);
+        }
+
         /// Gets the number of elements in the collection.
         /// @returns The number of elements in the collection.
         size_type Count() const noexcept
@@ -311,6 +327,41 @@ class CLinqCollection
             return count;
         }
 
+        /// Gets the distinct elements of the collection.
+        /// @returns Gets the distinct elements of the collection.
+        CLinqCollection<TElement> Distinct() const
+        {
+            auto newElements = std::vector<TElement>();
+
+            for (auto& element : _elements)
+            {
+                if (!VectorContains(newElements, element))
+                {
+                    newElements.emplace_back(element);
+                }
+            }
+
+            return CLinqCollection<TElement>(newElements);
+        }
+
+        /// Gets the elements in this collection with elements in the given collection omitted.
+        /// @param collection The collection.
+        /// @returns The elements in this collection with elements in the given collection omitted.
+        CLinqCollection<TElement> Except(CLinqCollection<TElement> const& collection) const
+        {
+            auto newElements = std::vector<TElement>();
+
+            for (auto& element : _elements)
+            {
+                if (!VectorContains(collection._elements, element))
+                {
+                    newElements.emplace_back(element);
+                }
+            }
+
+            return CLinqCollection<TElement>(newElements);
+        }
+
         /// Gets a const reference to the first element in the collection.
         /// @returns A const reference to the first element in the collection.
         TElement const& First() const
@@ -318,6 +369,24 @@ class CLinqCollection
             ThrowIfEmpty();
 
             return _elements.front();
+        }
+
+        /// Computes the set intersection of this collection and the given collection.
+        /// @param collection The collection.
+        /// @returns The set intersection of this collection and the given collection.
+        CLinqCollection<TElement> Intersection(CLinqCollection<TElement> const& collection) const
+        {
+            auto newElements = std::vector<TElement>();
+
+            for (auto& element : _elements)
+            {
+                if (VectorContains(_elements, element) && VectorContains(collection._elements, element))
+                {
+                    newElements.emplace_back(element);
+                }
+            }
+
+            return CLinqCollection<TElement>(newElements);
         }
 
         /// Gets a const reference to the last element in the collection.
@@ -340,6 +409,15 @@ class CLinqCollection
             return CLinqCollection<TElement>(newElements);
         }
 
+        /// Gets the collection in reverse order.
+        /// @returns The collection in reverse order.
+        CLinqCollection<TElement> Reverse() const
+        {
+            auto newElements = _elements;
+            std::reverse(newElements.begin(), newElements.end());
+            return CLinqCollection<TElement>(newElements);
+        }
+
         /// Projects each element to a new sequence using the projection function.
         /// @tparam TProjection The type to project the elements to.
         /// @param projectionFunction The projection function/
@@ -357,6 +435,139 @@ class CLinqCollection
             return CLinqCollection<TProjection>(newElements);
         }
 
+        /// Returns the only element of the sequence.
+        /// @returns A reference to the single element of the sequence.
+        /// @throws CLinqException If 0 or many elements are contained within the collection.
+        TElement const& Single() const
+        {
+            ThrowIfEmpty();
+            if (_elements.size() > 1)
+            {
+                throw CLinqException("Collection contains more than 1 element.");
+            }
+
+            return _elements[0];
+        }
+
+        /// Skips a given number of elements and returns the rest.
+        /// @param numberOfElements The number of elements to skip.
+        /// @returns The remainder of the elements after skipping n.
+        CLinqCollection<TElement> Skip(size_type const numberOfElements) const
+        {
+            if (numberOfElements > _elements.size())
+            {
+                throw CLinqException("Cannot skip more elements than exist in collection.");
+            }
+
+            return CLinqCollection<TElement>(std::vector<TElement>(_elements.begin() + numberOfElements, _elements.end()));
+        }
+
+        /// Skips a given number of elements from the back of the collection and returns the rest.
+        /// @param numberOfElements The number of elements to skip from the back.
+        /// @returns The remainder of the elements after skipping n from the back of the collection.
+        CLinqCollection<TElement> SkipLast(size_type const numberOfElements) const
+        {
+            if (numberOfElements > _elements.size())
+            {
+                throw CLinqException("Cannot skip more elements than exist in collection.");
+            }
+
+            return CLinqCollection<TElement>(std::vector<TElement>(_elements.begin(), _elements.end() - numberOfElements));
+        }
+
+        /// Skips elements while the match function returns true and returns the remainder of the collection.
+        /// @param matchFunction The match function.
+        /// @returns A new collection with the elements skipped until the match function returns false.
+        CLinqCollection<TElement> SkipWhile(MatchFunction const& matchFunction) const
+        {
+            size_type skipNumber = 0;
+            for (auto& element : _elements)
+            {
+                if (matchFunction(element))
+                {
+                    ++skipNumber;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return Skip(skipNumber);
+        }
+
+        /// Static casts each element of the collection to a new collection.
+        /// @tparam TCast The type to cast to.
+        /// @param collection The collection to cast.
+        /// @returns The casted collection.
+        template <typename TCast>
+        CLinqCollection<TCast> StaticCast() const
+        {
+            static_assert(
+                std::is_convertible<TElement, TCast>::value,
+                "Cannot cast StaticCast CLinqCollection.");
+
+            auto newElements = std::vector<TCast>(_elements.size());
+
+            for (size_type i = 0; i < _elements.size(); ++i)
+            {
+                newElements[i] = static_cast<TCast>(_elements[i]);
+            }
+
+            return CLinqCollection<TCast>(newElements);
+        }
+
+        /// Takes a specific number of elements from the start of the collection.
+        /// @param numberOfElements The number of elements to take.
+        /// @returns A new collection with the first n elements from the collection.
+        CLinqCollection<TElement> Take(size_type const numberOfElements) const
+        {
+            if (numberOfElements > _elements.size())
+            {
+                throw CLinqException("Cannot take more elements than exist in collection.");
+            }
+
+            auto newElements = _elements;
+            newElements.resize(numberOfElements);
+
+            return CLinqCollection<TElement>(newElements);
+        }
+
+        /// Takes a specific number of elements from the end of the collection.
+        /// @param numberOfElements The number of elements to take.
+        /// @returns A new collection with the last n elements from the collection.
+        CLinqCollection<TElement> TakeLast(size_type const numberOfElements) const
+        {
+            if (numberOfElements > _elements.size())
+            {
+                throw CLinqException("Cannot take more elements than exist in collection.");
+            }
+
+            return CLinqCollection<TElement>(std::vector<TElement>(_elements.end() - numberOfElements, _elements.end()));
+        }
+
+        /// Takes elements while the match function returns true.
+        /// @param matchFunction The match function.
+        /// @returns A new collection with the elements taken until the match function returns false.
+        CLinqCollection<TElement> TakeWhile(MatchFunction const& matchFunction) const
+        {
+            auto newElements = std::vector<TElement>();
+
+            for (auto& element : _elements)
+            {
+                if (matchFunction(element))
+                {
+                    newElements.emplace_back(element);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return CLinqCollection<TElement>(newElements);
+        }
+
         /// Gets a collection of elements from the collection that match the match function.
         /// @param matchFunction The match function/
         /// @returns A collection of elements from the collection that match the match function.
@@ -367,6 +578,25 @@ class CLinqCollection
             for (auto& element : _elements)
             {
                 if (matchFunction(element))
+                {
+                    newElements.emplace_back(element);
+                }
+            }
+
+            return CLinqCollection<TElement>(newElements);
+        }
+
+        /// Computes the set union of this collection and the given collection.
+        /// @param collection The collection.
+        /// @returns The set union of this collection and the given collection.
+        CLinqCollection<TElement> Union(CLinqCollection<TElement> const& collection) const
+        {
+            auto newElements = Distinct()._elements;
+            auto distinctCollection = collection.Distinct()._elements;
+
+            for (auto& element : distinctCollection)
+            {
+                if (!VectorContains(newElements, element))
                 {
                     newElements.emplace_back(element);
                 }
@@ -426,6 +656,12 @@ class CLinqCollection
 
     private:
         std::vector<TElement> _elements;
+
+        template <typename T>
+        static bool VectorContains(std::vector<T> const& vector, T const& value)
+        {
+            return std::find(vector.begin(), vector.end(), value) != vector.end();
+        }
 
         void ThrowIfOutOfRange(size_type const index) const
         {

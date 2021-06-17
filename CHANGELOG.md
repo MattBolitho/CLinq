@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [🔖 [0.2.0]](https://github.com/MattBolitho/CLinq/releases/tag/CLinq-0.2) - 17/06/2021
+### ✨ Added
+- Adds casting of element types.
+- `Contains`, `Distinct`, `Except`, `Single` and `Reverse` methods.
+- `Skip`, `SkipLast`, `SkipWhile`, `Take`, `TakeLast`, `TakeWhile` methods.
+- Set operations `Union` and `Intersection`.
+
+### 🙌 Improvements
+- `CLinqCollection<TElement>` can now be constructed with initializer list.
+
 ## [🔖 [0.1.0]](https://github.com/MattBolitho/CLinq/releases/tag/CLinq-0.1) - 17/06/2021
 ### ✨ Added
 - Unit test project using Catch2.

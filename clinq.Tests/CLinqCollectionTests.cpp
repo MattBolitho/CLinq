@@ -344,7 +344,7 @@ SCENARIO("CLinqCollections can check if any values exist")
 {
     GIVEN("A nonempty collection")
     {
-        auto collection = CLinqCollection<int>(std::vector<int>{ 1, 2, 3 });
+        auto collection = CLinqCollection<int>({ 1, 2, 3 });
 
         THEN("true is returned")
         {
@@ -406,9 +406,9 @@ SCENARIO("CLinqCollections can have values appended")
 {
     GIVEN("A collection and a value")
     {
-        auto collection = CLinqCollection<int>(std::vector<int>{1, 2});
+        auto collection = CLinqCollection<int>({1, 2});
         auto constexpr value = 3;
-        auto expectedCollection = CLinqCollection<int>(std::vector<int>{ 1, 2, 3 });
+        auto expectedCollection = CLinqCollection<int>({ 1, 2, 3 });
 
         WHEN("One collection is appended to the other")
         {
@@ -426,9 +426,9 @@ SCENARIO("CLinqCollections can have values prepended")
 {
     GIVEN("A collection and a value")
     {
-        auto collection = CLinqCollection<int>(std::vector<int>{1, 2});
+        auto collection = CLinqCollection<int>({1, 2});
         auto constexpr value = 3;
-        auto expectedCollection = CLinqCollection<int>(std::vector<int>{ 3, 1, 2 });
+        auto expectedCollection = CLinqCollection<int>({ 3, 1, 2 });
 
         WHEN("One collection is prepended to the other")
         {
@@ -446,9 +446,9 @@ SCENARIO("CLinqCollections can be concatenated")
 {
     GIVEN("Two collections")
     {
-        auto collection1 = CLinqCollection<int>(std::vector<int>{1, 2});
-        auto collection2 = CLinqCollection<int>(std::vector<int>{3, 4});
-        auto expectedCollection = CLinqCollection<int>(std::vector<int>{1, 2, 3, 4});
+        auto collection1 = CLinqCollection<int>({1, 2});
+        auto collection2 = CLinqCollection<int>({3, 4});
+        auto expectedCollection = CLinqCollection<int>({1, 2, 3, 4});
 
         WHEN("One collection is appended to the other")
         {
@@ -468,7 +468,7 @@ SCENARIO("CLinqCollections can be generated from repeat value")
     {
         auto constexpr count = 5;
         auto constexpr value = 1;
-        auto expected = CLinqCollection<int>(std::vector<int>{1,1,1,1,1});
+        auto expected = CLinqCollection<int>({1,1,1,1,1});
 
         WHEN("Value is repeated")
         {
@@ -488,7 +488,7 @@ SCENARIO("CLinqCollections can be generated from sequential values")
     {
         auto constexpr count = 5;
         auto constexpr initialValue = 1;
-        auto expected = CLinqCollection<int>(std::vector<int>{1, 2, 3, 4, 5});
+        auto expected = CLinqCollection<int>({1, 2, 3, 4, 5});
 
         WHEN("Value is repeated")
         {
@@ -506,7 +506,7 @@ SCENARIO("CLinqCollections can be projected to maps")
 {
     GIVEN("A collection")
     {
-        auto collection = CLinqCollection<int>(std::vector<int>{1, 2});
+        auto collection = CLinqCollection<int>({1, 2});
 
         WHEN("Projected to map")
         {
@@ -538,8 +538,8 @@ SCENARIO("CLinqCollection elements can be projected to a new sequence")
 {
     GIVEN("A collection and projection function")
     {
-        auto collection = CLinqCollection<int>(std::vector<int>{1, 2, 3, 4});
-        auto expected = CLinqCollection<int>(std::vector<int>{2, 4, 6, 8});
+        auto collection = CLinqCollection<int>({1, 2, 3, 4});
+        auto expected = CLinqCollection<int>({2, 4, 6, 8});
         auto projectionFunction = [](int const i){ return i * 2; };
 
         WHEN("The elements are projected to a new sequence")
@@ -558,8 +558,8 @@ SCENARIO("CLinqCollection elements can be filtered to a new sequence")
 {
     GIVEN("A collection and filter function")
     {
-        auto collection = CLinqCollection<int>(std::vector<int>{1, 2, 3, 4});
-        auto expected = CLinqCollection<int>(std::vector<int>{1, 2});
+        auto collection = CLinqCollection<int>({1, 2, 3, 4});
+        auto expected = CLinqCollection<int>({1, 2});
         auto filterFunction = [](int const i) { return i < 3; };
 
         WHEN("The elements are filtered to a new sequence")
@@ -569,6 +569,342 @@ SCENARIO("CLinqCollection elements can be filtered to a new sequence")
             THEN("The expected collection is returned")
             {
                 REQUIRE(expected == filteredCollection);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can be cast to other element types")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({1, 2});
+        auto expected = CLinqCollection<float>(std::vector<float>{1.f, 2.f});
+
+        WHEN("Collection is cast")
+        {
+            auto castCollection = collection.StaticCast<float>();
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == castCollection);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can check for element existence")
+{
+    GIVEN("A value")
+    {
+        auto constexpr value = 1;
+
+        WHEN("Collection contains value")
+        {
+            auto collection = CLinqCollection<int>({1, 2});
+
+            THEN("Contains returns true")
+            {
+                REQUIRE(collection.Contains(value));
+            }
+        }
+
+        WHEN("Collection does not contain value")
+        {
+            auto collection = CLinqCollection<int>({2, 2});
+
+            THEN("Contains returns false")
+            {
+                REQUIRE_FALSE(collection.Contains(value));
+            }
+        }
+    }
+}
+
+SCENARIO("ClinqCollection can generate distinct elements")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({1, 2, 1, 1, 1, 2, 2});
+        auto expected = CLinqCollection<int>({1, 2});
+
+        WHEN("Distinct called")
+        {
+            auto distinct = collection.Distinct();
+
+            THEN("Distinct elements generated")
+            {
+                REQUIRE(expected == distinct);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can be reversed")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({1, 2, 3, 4});
+        auto expected = CLinqCollection<int>({4, 3, 2, 1});
+
+        WHEN("The collection is reversed")
+        {
+            auto reversed = collection.Reverse();
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == reversed);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollection can have single element returned")
+{
+    GIVEN("A collection with many elements")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3, 4 });
+
+        WHEN("Single is called")
+        {
+            THEN("Exception is thrown")
+            {
+                REQUIRE_THROWS(collection.Single());
+            }
+        }
+    }
+
+    GIVEN("An empty collection")
+    {
+        auto collection = CLinqCollection<int>::Empty();
+
+        WHEN("Single is called")
+        {
+            THEN("Exception is thrown")
+            {
+                REQUIRE_THROWS(collection.Single());
+            }
+        }
+    }
+
+    GIVEN("A collection with a single element")
+    {
+        auto collection = CLinqCollection<int>({ 1 });
+
+        WHEN("Single is called")
+        {
+            auto element = collection.Single();
+
+            THEN("Expected value is returned")
+            {
+                REQUIRE(1 == element);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have their set union computed")
+{
+    GIVEN("Two collections")
+    {
+        auto collection1 = CLinqCollection<int>({ 1, 2, 3 });
+        auto collection2 = CLinqCollection<int>({ 1, 3, 4, 5 });
+        auto expected = CLinqCollection<int>({ 1, 2, 3, 4, 5 });
+
+        WHEN("Their set union is computed")
+        {
+            auto unionCollection = collection1.Union(collection2);
+
+            THEN("The expected collection is returned")
+            {
+                REQUIRE(expected == unionCollection);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have their set intersection computed")
+{
+    GIVEN("Two collections")
+    {
+        auto collection1 = CLinqCollection<int>({ 1, 2, 3 });
+        auto collection2 = CLinqCollection<int>({ 1, 3, 4, 5 });
+        auto expected = CLinqCollection<int>({ 1, 3});
+
+        WHEN("Their set intersection is computed")
+        {
+            auto unionCollection = collection1.Intersection(collection2);
+
+            THEN("The expected collection is returned")
+            {
+                REQUIRE(expected == unionCollection);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have elements taken from the front of the collection")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3 });
+
+        WHEN("More elements are taken than exist in the collection")
+        {
+            THEN("Exception is thrown")
+            {
+                REQUIRE_THROWS(collection.Take(10));
+            }
+        }
+
+        WHEN("A subset of elements are taken")
+        {
+            auto expected = CLinqCollection<int>({ 1, 2 });
+            auto actual = collection.Take(2);
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have elements taken from the back of the collection")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3 });
+
+        WHEN("More elements are taken than exist in the collection")
+        {
+            THEN("Exception is thrown")
+            {
+                REQUIRE_THROWS(collection.TakeLast(10));
+            }
+        }
+
+        WHEN("A subset of elements are taken")
+        {
+            auto expected = CLinqCollection<int>({ 2, 3 });
+            auto actual = collection.TakeLast(2);
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have elements taken while some condition is true")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3 });
+
+        WHEN("Elements are taken using a match function")
+        {
+            auto matchFunction = [](int const i) { return i % 2 == 1; };
+            auto expected = CLinqCollection<int>({ 1 });
+            auto actual = collection.TakeWhile(matchFunction);
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have elements skipped from the front of the collection")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3 });
+
+        WHEN("More elements are skipped than exist in the collection")
+        {
+            THEN("Exception is thrown")
+            {
+                REQUIRE_THROWS(collection.Skip(10));
+            }
+        }
+
+        WHEN("A subset of elements are skipped")
+        {
+            auto expected = CLinqCollection<int>({ 2, 3 });
+            auto actual = collection.Skip(1);
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have elements skipped from the back of the collection")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3 });
+
+        WHEN("More elements are skipped than exist in the collection")
+        {
+            THEN("Exception is thrown")
+            {
+                REQUIRE_THROWS(collection.SkipLast(10));
+            }
+        }
+
+        WHEN("A subset of elements are skipped")
+        {
+            auto expected = CLinqCollection<int>({ 1, 2 });
+            auto actual = collection.SkipLast(1);
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have elements skipped while some condition is true")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3 });
+
+        WHEN("Elements are skipped using a match function")
+        {
+            auto matchFunction = [](int const i) { return i % 2 == 1; };
+            auto expected = CLinqCollection<int>({ 2, 3 });
+            auto actual = collection.SkipWhile(matchFunction);
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have elements omitted")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3, 4, 5 });
+
+        WHEN("Elements are omitted with Except method")
+        {
+            auto expected = CLinqCollection<int>({ 1, 4, 5 });
+            auto actual = collection.Except({ 2, 3 });
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == actual);
             }
         }
     }
