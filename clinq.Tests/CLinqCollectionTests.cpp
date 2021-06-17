@@ -3,6 +3,8 @@
 
 import CLinq;
 
+#include <map>
+#include <unordered_map>
 #include "catch.hpp"
 
 TEST_CASE("CLinqCollection iterators")
@@ -455,6 +457,78 @@ SCENARIO("CLinqCollections can be concatenated")
             THEN("The correct collection is returned")
             {
                 REQUIRE(expectedCollection == actualCollection);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can be generated from repeat value")
+{
+    GIVEN("A value and a count")
+    {
+        auto constexpr count = 5;
+        auto constexpr value = 1;
+        auto expected = CLinqCollection<int>(std::vector<int>{1,1,1,1,1});
+
+        WHEN("Value is repeated")
+        {
+            auto actual = CLinqCollection<int>::Repeat(value, count);
+
+            THEN("The correct collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can be generated from sequential values")
+{
+    GIVEN("An initial value and a count")
+    {
+        auto constexpr count = 5;
+        auto constexpr initialValue = 1;
+        auto expected = CLinqCollection<int>(std::vector<int>{1, 2, 3, 4, 5});
+
+        WHEN("Value is repeated")
+        {
+            auto actual = CLinqCollection<int>::Range(initialValue, count);
+
+            THEN("The correct collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can be projected to maps")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>(std::vector<int>{1, 2});
+
+        WHEN("Projected to map")
+        {
+            auto keySelector = [](int const i) { return i; };
+            auto valueSelector = [](int const i) { return i * i; };
+            auto expected = std::map<int, int>{ {1,1}, {2,4} };
+
+            THEN("Expected map is produced")
+            {
+                REQUIRE(expected == collection.ToMap<int, int>(keySelector, valueSelector));
+            }
+        }
+
+        WHEN("Projected to unordered map")
+        {
+            auto keySelector = [](int const i) { return i; };
+            auto valueSelector = [](int const i) { return i * i; };
+            auto expected = std::unordered_map<int, int>{ {1,1}, {2,4} };
+
+            THEN("Expected map is produced")
+            {
+                REQUIRE(expected == collection.ToUnorderedMap<int, int>(keySelector, valueSelector));
             }
         }
     }

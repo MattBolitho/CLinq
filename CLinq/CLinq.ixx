@@ -9,6 +9,11 @@ module;
 #include <type_traits>
 #include <stdexcept>
 #include <functional>
+#include <algorithm>
+#include <list>
+#include <set>
+#include <map>
+#include <unordered_map>
 export module CLinq;
 
 /// Checks if the given type is iterable. By default, this will be false.
@@ -67,6 +72,11 @@ class CLinqCollection
         /// Type alias for a function that maps elements to true or false.
         using MatchFunction = std::function<bool(TElement)>;
 
+        /// Type alias for a function that projects elements to some other type.
+        /// @tparam TProjection The type to project the elements to.
+        template <typename TProjection>
+        using ProjectionFunction = std::function<TProjection(TElement)>;
+
         /// Initializes a new instance of the CLinqCollection class.
         explicit CLinqCollection() noexcept
             : _elements(std::vector<TElement>())
@@ -83,7 +93,7 @@ class CLinqCollection
         /// Initializes a new instance of the CLinqCollection class.
         /// @param memory A block of memory to copy values from.
         /// @param numberOfElements The number of elements to copy.
-        explicit CLinqCollection(TElement* const memory, size_type numberOfElements) noexcept
+        explicit CLinqCollection(TElement* const memory, size_type const numberOfElements) noexcept
             : _elements(std::vector<TElement>(memory, memory + numberOfElements))
         {
         }
@@ -150,6 +160,33 @@ class CLinqCollection
         static CLinqCollection<TElement> Empty()
         {
             return CLinqCollection<TElement>();
+        }
+
+        /// Gets a collection containing the same element n times.
+        /// @param element The element.
+        /// @param count The number of elements.
+        /// @returns A collection containing the same element n times.
+        static CLinqCollection<TElement> Repeat(TElement const& element, size_type const count)
+        {
+            return CLinqCollection<TElement>(std::vector<TElement>(count, element));
+        }
+
+        /// Gets a collection starting from the initial element and prefix incrementing it n times.
+        /// @param initial The initial element.
+        /// @param count The number of elements.
+        /// @returns A collection starting from the initial element and prefix incrementing it n times.
+        static CLinqCollection<TElement> Range(TElement const& initial, size_type const count)
+        {
+            auto element = initial;
+            auto elements = std::vector<TElement>(count);
+
+            for (size_type i = 0; i < count; ++i)
+            {
+                elements[i] = element;
+                ++element;
+            }
+
+            return CLinqCollection<TElement>(elements);
         }
 
         /// Gets the iterator at the start of the collection.
@@ -303,6 +340,55 @@ class CLinqCollection
             return CLinqCollection<TElement>(newElements);
         }
 
+        /// Gets the elements in the collection as a vector.
+        /// @returns The elements in the collection as a vector.
+        std::vector<TElement> ToVector() const noexcept
+        {
+            return _elements;
+        }
+
+        /// Gets the elements in the collection as a list.
+        /// @returns The elements in the collection as a list.
+        std::list<TElement> ToList() const
+        {
+            return std::list(_elements.begin(), _elements.end());
+        }
+
+        /// Gets the elements in the collection as a set.
+        /// @returns The elements in the collection as a set.
+        std::list<TElement> ToSet() const
+        {
+            return std::set(_elements.begin(), _elements.end());
+        }
+
+        /// Projects the collection to a map.
+        /// @tparam TKey The type of the map's keys.
+        /// @tparam TValue The type of the map's values.
+        /// @param keySelector A projection function for the keys.
+        /// @param valueSelector A projection function for the values.
+        /// @returns A map from the elements in the collection.
+        template <typename TKey, typename TValue>
+        std::map<TKey, TValue> ToMap(
+            ProjectionFunction<TKey> const& keySelector,
+            ProjectionFunction<TValue> const& valueSelector) const
+        {
+            return ToMapCore<std::map<TKey, TValue>>(keySelector, valueSelector);
+        }
+
+        /// Projects the collection to an unordered map.
+        /// @tparam TKey The type of the map's keys.
+        /// @tparam TValue The type of the map's values.
+        /// @param keySelector A projection function for the keys.
+        /// @param valueSelector A projection function for the values.
+        /// @returns An unordered map from the elements in the collection.
+        template <typename TKey, typename TValue>
+        std::unordered_map<TKey, TValue> ToUnorderedMap(
+            ProjectionFunction<TKey> const& keySelector,
+            ProjectionFunction<TValue> const& valueSelector) const
+        {
+            return ToMapCore<std::unordered_map<TKey, TValue>>(keySelector, valueSelector);
+        }
+
     private:
         std::vector<TElement> _elements;
 
@@ -322,5 +408,20 @@ class CLinqCollection
             {
                 throw CLinqException("Collection is empty.");
             }
+        }
+
+        template <typename TMap, typename TKey, typename TValue>
+        TMap ToMapCore(
+            ProjectionFunction<TKey> const& keySelector,
+            ProjectionFunction<TValue> const& valueSelector) const
+        {
+            TMap map{};
+
+            for (auto& element : _elements)
+            {
+                map[keySelector(element)] = valueSelector(element);
+            }
+
+            return map;
         }
 };
