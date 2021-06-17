@@ -1,4 +1,4 @@
-/// @file clinq.Tests.cpp
+/// @file CLinq.Tests.cpp
 /// The unit tests for CLinq.
 
 import CLinq;
