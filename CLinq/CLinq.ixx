@@ -5,6 +5,7 @@ module;
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <initializer_list>
 #include <concepts>
 #include <type_traits>
 #include <stdexcept>
@@ -81,6 +82,12 @@ class CLinqCollection
         /// Initializes a new instance of the CLinqCollection class.
         explicit CLinqCollection() noexcept
             : _elements(std::vector<TElement>())
+        {
+        }
+
+        /// Initializes a new instance of the CLinqCollection class.
+        explicit CLinqCollection(std::initializer_list<TElement> const& elements) noexcept
+            : _elements(std::vector<TElement>(elements.begin(), elements.end()))
         {
         }
 
@@ -390,6 +397,20 @@ class CLinqCollection
             }
 
             return CLinqCollection<TProjection>(newElements);
+        }
+
+        /// Returns the only element of the sequence.
+        /// @returns A reference to the single element of the sequence.
+        /// @throws CLinqException If 0 or many elements are contained within the collection.
+        TElement const& Single() const
+        {
+            ThrowIfEmpty();
+            if (_elements.size() > 1)
+            {
+                throw CLinqException("Collection contains more than 1 element.");
+            }
+
+            return _elements[0];
         }
 
         /// Static casts each element of the collection to a new collection.
