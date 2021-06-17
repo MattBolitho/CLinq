@@ -14,6 +14,7 @@ module;
 #include <set>
 #include <map>
 #include <unordered_map>
+#include <type_traits>
 export module CLinq;
 
 /// Checks if the given type is iterable. By default, this will be false.
@@ -276,6 +277,27 @@ class CLinqCollection
             ThrowIfOutOfRange(index);
 
             return _elements[index];
+        }
+
+        /// Static casts each element of the collection to a new collection.
+        /// @tparam TCast The type to cast to.
+        /// @param collection The collection to cast.
+        /// @returns The casted collection.
+        template <typename TCast>
+        CLinqCollection<TCast> StaticCast() const
+        {
+            static_assert(
+                std::is_convertible<TElement, TCast>::value,
+                "Cannot cast StaticCast CLinqCollection.");
+
+            auto newElements = std::vector<TCast>(_elements.size());
+
+            for (size_type i = 0; i < _elements.size(); ++i)
+            {
+                newElements[i] = static_cast<TCast>(_elements[i]);
+            }
+
+            return CLinqCollection<TCast>(newElements);
         }
 
         /// Concatenates the two collections and returns the result as a new instance.

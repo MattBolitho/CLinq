@@ -573,3 +573,22 @@ SCENARIO("CLinqCollection elements can be filtered to a new sequence")
         }
     }
 }
+
+SCENARIO("CLinqCollections can be cast to other element types")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>(std::vector<int>{1, 2});
+        auto expected = CLinqCollection<float>(std::vector<float>{1.f, 2.f});
+
+        WHEN("Collection is cast")
+        {
+            auto castCollection = collection.StaticCast<float>();
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == castCollection);
+            }
+        }
+    }
+}
