@@ -702,3 +702,191 @@ SCENARIO("CLinqCollection can have single element returned")
         }
     }
 }
+
+SCENARIO("CLinqCollections can have their set union computed")
+{
+    GIVEN("Two collections")
+    {
+        auto collection1 = CLinqCollection<int>({ 1, 2, 3 });
+        auto collection2 = CLinqCollection<int>({ 1, 3, 4, 5 });
+        auto expected = CLinqCollection<int>({ 1, 2, 3, 4, 5 });
+
+        WHEN("Their set union is computed")
+        {
+            auto unionCollection = collection1.Union(collection2);
+
+            THEN("The expected collection is returned")
+            {
+                REQUIRE(expected == unionCollection);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have their set intersection computed")
+{
+    GIVEN("Two collections")
+    {
+        auto collection1 = CLinqCollection<int>({ 1, 2, 3 });
+        auto collection2 = CLinqCollection<int>({ 1, 3, 4, 5 });
+        auto expected = CLinqCollection<int>({ 1, 3});
+
+        WHEN("Their set intersection is computed")
+        {
+            auto unionCollection = collection1.Intersection(collection2);
+
+            THEN("The expected collection is returned")
+            {
+                REQUIRE(expected == unionCollection);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have elements taken from the front of the collection")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3 });
+
+        WHEN("More elements are taken than exist in the collection")
+        {
+            THEN("Exception is thrown")
+            {
+                REQUIRE_THROWS(collection.Take(10));
+            }
+        }
+
+        WHEN("A subset of elements are taken")
+        {
+            auto expected = CLinqCollection<int>({ 1, 2 });
+            auto actual = collection.Take(2);
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have elements taken from the back of the collection")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3 });
+
+        WHEN("More elements are taken than exist in the collection")
+        {
+            THEN("Exception is thrown")
+            {
+                REQUIRE_THROWS(collection.TakeLast(10));
+            }
+        }
+
+        WHEN("A subset of elements are taken")
+        {
+            auto expected = CLinqCollection<int>({ 2, 3 });
+            auto actual = collection.TakeLast(2);
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have elements taken while some condition is true")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3 });
+
+        WHEN("Elements are taken using a match function")
+        {
+            auto matchFunction = [](int const i) { return i % 2 == 1; };
+            auto expected = CLinqCollection<int>({ 1 });
+            auto actual = collection.TakeWhile(matchFunction);
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have elements skipped from the front of the collection")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3 });
+
+        WHEN("More elements are skipped than exist in the collection")
+        {
+            THEN("Exception is thrown")
+            {
+                REQUIRE_THROWS(collection.Skip(10));
+            }
+        }
+
+        WHEN("A subset of elements are skipped")
+        {
+            auto expected = CLinqCollection<int>({ 2, 3 });
+            auto actual = collection.Skip(1);
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have elements skipped from the back of the collection")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3 });
+
+        WHEN("More elements are skipped than exist in the collection")
+        {
+            THEN("Exception is thrown")
+            {
+                REQUIRE_THROWS(collection.SkipLast(10));
+            }
+        }
+
+        WHEN("A subset of elements are skipped")
+        {
+            auto expected = CLinqCollection<int>({ 1, 2 });
+            auto actual = collection.SkipLast(1);
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have elements skipped while some condition is true")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3 });
+
+        WHEN("Elements are skipped using a match function")
+        {
+            auto matchFunction = [](int const i) { return i % 2 == 1; };
+            auto expected = CLinqCollection<int>({ 2, 3 });
+            auto actual = collection.SkipWhile(matchFunction);
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}

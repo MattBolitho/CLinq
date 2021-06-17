@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### ✨ Added
 - Adds casting of element types.
 - `Contains`, `Distinct`, `Single` and `Reverse` methods.
+- `Skip`, `SkipLast`, `SkipWhile`, `Take`, `TakeLast`, `TakeWhile` methods.
+- Set operations `Union` and `Intersection`.
 
 ### 🙌 Improvements
 - `CLinqCollection<TElement>` can now be constructed with initializer list.
