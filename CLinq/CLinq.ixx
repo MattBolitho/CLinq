@@ -218,6 +218,17 @@ class CLinqCollection
             return false;
         }
 
+        /// Appends the element to the collection.
+        /// @param element The element.
+        /// @returns A new collection with the element appended.
+        CLinqCollection<TElement> Append(TElement const& element) const
+        {
+            auto newElements = _elements;
+            newElements.emplace_back(element);
+
+            return CLinqCollection<TElement>(newElements);
+        }
+
         /// Gets a const reference to the element at given index in the collection.
         /// @param index The index.
         /// @returns A const reference to the element at given index in the collection.
@@ -228,6 +239,14 @@ class CLinqCollection
             ThrowIfOutOfRange(index);
 
             return _elements[index];
+        }
+
+        /// Concatenates the two collections and returns the result as a new instance.
+        /// @param collection The collection.
+        /// @returns The two collections concatenated.
+        CLinqCollection<TElement> Concat(CLinqCollection<TElement> collection) const
+        {
+            return *this + collection;
         }
 
         /// Gets the number of elements in the collection.
@@ -271,6 +290,17 @@ class CLinqCollection
             ThrowIfEmpty();
 
             return _elements.back();
+        }
+
+        /// Prepends the element to the collection.
+        /// @param element The element.
+        /// @returns A new collection with the element prepended.
+        CLinqCollection<TElement> Prepend(TElement const& element) const
+        {
+            auto newElements = _elements;
+            newElements.emplace(newElements.begin(), element);
+
+            return CLinqCollection<TElement>(newElements);
         }
 
     private:

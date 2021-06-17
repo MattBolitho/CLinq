@@ -11,3 +11,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Operators for comparisons, indexing and concatenation.
     - Positional access methods `At`, `First`, `Last`.
     - Predicate methods `Any` and `All`.
+    - Collection expansion methods `Concat`, `Append` and `Prepend`.

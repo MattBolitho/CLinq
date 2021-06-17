@@ -399,3 +399,63 @@ SCENARIO("CLinqCollections can check if all values match a function")
         }
     }
 }
+
+SCENARIO("CLinqCollections can have values appended")
+{
+    GIVEN("A collection and a value")
+    {
+        auto collection = CLinqCollection<int>(std::vector<int>{1, 2});
+        auto constexpr value = 3;
+        auto expectedCollection = CLinqCollection<int>(std::vector<int>{ 1, 2, 3 });
+
+        WHEN("One collection is appended to the other")
+        {
+            auto actualCollection = collection.Append(value);
+
+            THEN("The correct collection is returned")
+            {
+                REQUIRE(expectedCollection == actualCollection);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have values prepended")
+{
+    GIVEN("A collection and a value")
+    {
+        auto collection = CLinqCollection<int>(std::vector<int>{1, 2});
+        auto constexpr value = 3;
+        auto expectedCollection = CLinqCollection<int>(std::vector<int>{ 3, 1, 2 });
+
+        WHEN("One collection is prepended to the other")
+        {
+            auto actualCollection = collection.Prepend(value);
+
+            THEN("The correct collection is returned")
+            {
+                REQUIRE(expectedCollection == actualCollection);
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can be concatenated")
+{
+    GIVEN("Two collections")
+    {
+        auto collection1 = CLinqCollection<int>(std::vector<int>{1, 2});
+        auto collection2 = CLinqCollection<int>(std::vector<int>{3, 4});
+        auto expectedCollection = CLinqCollection<int>(std::vector<int>{1, 2, 3, 4});
+
+        WHEN("One collection is appended to the other")
+        {
+            auto actualCollection = collection1.Concat(collection2);
+
+            THEN("The correct collection is returned")
+            {
+                REQUIRE(expectedCollection == actualCollection);
+            }
+        }
+    }
+}
