@@ -592,3 +592,31 @@ SCENARIO("CLinqCollections can be cast to other element types")
         }
     }
 }
+
+SCENARIO("CLinqCollections can check for element existence")
+{
+    GIVEN("A value")
+    {
+        auto constexpr value = 1;
+
+        WHEN("Collection contains value")
+        {
+            auto collection = CLinqCollection<int>(std::vector<int>{1, 2});
+
+            THEN("Contains returns true")
+            {
+                REQUIRE(collection.Contains(value));
+            }
+        }
+
+        WHEN("Collection does not contain value")
+        {
+            auto collection = CLinqCollection<int>(std::vector<int>{2, 2});
+
+            THEN("Contains returns false")
+            {
+                REQUIRE_FALSE(collection.Contains(value));
+            }
+        }
+    }
+}

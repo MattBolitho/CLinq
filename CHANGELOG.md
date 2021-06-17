@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [🔖 Unreleased] - 17/06/2021
 ### ✨ Added
 - Adds casting of element types.
+- `Contains` element method.
 
 ## [🔖 [0.1.0]](https://github.com/MattBolitho/CLinq/releases/tag/CLinq-0.1) - 17/06/2021
 ### ✨ Added

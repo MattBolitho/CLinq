@@ -279,33 +279,20 @@ class CLinqCollection
             return _elements[index];
         }
 
-        /// Static casts each element of the collection to a new collection.
-        /// @tparam TCast The type to cast to.
-        /// @param collection The collection to cast.
-        /// @returns The casted collection.
-        template <typename TCast>
-        CLinqCollection<TCast> StaticCast() const
-        {
-            static_assert(
-                std::is_convertible<TElement, TCast>::value,
-                "Cannot cast StaticCast CLinqCollection.");
-
-            auto newElements = std::vector<TCast>(_elements.size());
-
-            for (size_type i = 0; i < _elements.size(); ++i)
-            {
-                newElements[i] = static_cast<TCast>(_elements[i]);
-            }
-
-            return CLinqCollection<TCast>(newElements);
-        }
-
         /// Concatenates the two collections and returns the result as a new instance.
         /// @param collection The collection.
         /// @returns The two collections concatenated.
         CLinqCollection<TElement> Concat(CLinqCollection<TElement> collection) const
         {
             return *this + collection;
+        }
+
+        /// Checks whether or not the collection contains the given element.
+        /// @param element The element to find.
+        /// @returns True if the set contains the given element, false otherwise.
+        bool Contains(TElement const& element) const
+        {
+            return std::find(_elements.begin(), _elements.end(), element) != _elements.end();
         }
 
         /// Gets the number of elements in the collection.
@@ -377,6 +364,27 @@ class CLinqCollection
             }
 
             return CLinqCollection<TProjection>(newElements);
+        }
+
+        /// Static casts each element of the collection to a new collection.
+        /// @tparam TCast The type to cast to.
+        /// @param collection The collection to cast.
+        /// @returns The casted collection.
+        template <typename TCast>
+        CLinqCollection<TCast> StaticCast() const
+        {
+            static_assert(
+                std::is_convertible<TElement, TCast>::value,
+                "Cannot cast StaticCast CLinqCollection.");
+
+            auto newElements = std::vector<TCast>(_elements.size());
+
+            for (size_type i = 0; i < _elements.size(); ++i)
+            {
+                newElements[i] = static_cast<TCast>(_elements[i]);
+            }
+
+            return CLinqCollection<TCast>(newElements);
         }
 
         /// Gets a collection of elements from the collection that match the match function.
