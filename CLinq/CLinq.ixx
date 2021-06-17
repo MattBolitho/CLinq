@@ -80,20 +80,20 @@ class CLinqCollection
         using ProjectionFunction = std::function<TProjection(TElement)>;
 
         /// Initializes a new instance of the CLinqCollection class.
-        explicit CLinqCollection() noexcept
+        CLinqCollection() noexcept
             : _elements(std::vector<TElement>())
         {
         }
 
         /// Initializes a new instance of the CLinqCollection class.
-        explicit CLinqCollection(std::initializer_list<TElement> const& elements) noexcept
+        CLinqCollection(std::initializer_list<TElement> const& elements) noexcept
             : _elements(std::vector<TElement>(elements.begin(), elements.end()))
         {
         }
 
         /// Initializes a new instance of the CLinqCollection class.
         /// @param elements The initial elements.
-        explicit CLinqCollection(std::vector<TElement> const& elements) noexcept
+        CLinqCollection(std::vector<TElement> const& elements) noexcept
             : _elements(elements)
         {
         }
@@ -336,6 +336,24 @@ class CLinqCollection
             for (auto& element : _elements)
             {
                 if (!VectorContains(newElements, element))
+                {
+                    newElements.emplace_back(element);
+                }
+            }
+
+            return CLinqCollection<TElement>(newElements);
+        }
+
+        /// Gets the elements in this collection with elements in the given collection omitted.
+        /// @param collection The collection.
+        /// @returns The elements in this collection with elements in the given collection omitted.
+        CLinqCollection<TElement> Except(CLinqCollection<TElement> const& collection) const
+        {
+            auto newElements = std::vector<TElement>();
+
+            for (auto& element : _elements)
+            {
+                if (!VectorContains(collection._elements, element))
                 {
                     newElements.emplace_back(element);
                 }

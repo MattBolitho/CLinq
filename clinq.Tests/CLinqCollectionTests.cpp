@@ -890,3 +890,22 @@ SCENARIO("CLinqCollections can have elements skipped while some condition is tru
         }
     }
 }
+
+SCENARIO("CLinqCollections can have elements omitted")
+{
+    GIVEN("A collection")
+    {
+        auto collection = CLinqCollection<int>({ 1, 2, 3, 4, 5 });
+
+        WHEN("Elements are omitted with Except method")
+        {
+            auto expected = CLinqCollection<int>({ 1, 4, 5 });
+            auto actual = collection.Except({ 2, 3 });
+
+            THEN("Expected collection is returned")
+            {
+                REQUIRE(expected == actual);
+            }
+        }
+    }
+}
