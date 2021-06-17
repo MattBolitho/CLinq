@@ -166,3 +166,105 @@ SCENARIO("CLinqCollections can be concatenated with addition operator")
         }
     }
 }
+
+SCENARIO("CLinqCollections can have the first element accessed if the collection is not empty")
+{
+    GIVEN("A nonempty collection")
+    {
+        auto constexpr expected = 1;
+        auto collection = CLinqCollection<int>({ expected,2,3,4 });
+
+        WHEN("The first element is accessed")
+        {
+            auto firstElement = collection.First();
+
+            THEN("The first element is returned")
+            {
+                REQUIRE(expected == firstElement);
+            }
+        }
+    }
+
+    GIVEN("An emtpy collection")
+    {
+        auto collection = CLinqCollection<int>::Empty();
+
+        WHEN("The first element is accessed")
+        {
+            THEN("An exception is thrown")
+            {
+                REQUIRE_THROWS(collection.First());
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can have the last element accessed if the collection is not empty")
+{
+    GIVEN("A nonempty collection")
+    {
+        auto constexpr expected = 4;
+        auto collection = CLinqCollection<int>({ 1,2,3,expected });
+
+        WHEN("The last element is accessed")
+        {
+            auto lastElement = collection.Last();
+
+            THEN("The last element is returned")
+            {
+                REQUIRE(expected == lastElement);
+            }
+        }
+    }
+
+    GIVEN("An emtpy collection")
+    {
+        auto collection = CLinqCollection<int>::Empty();
+
+        WHEN("The last element is accessed")
+        {
+            THEN("An exception is thrown")
+            {
+                REQUIRE_THROWS(collection.Last());
+            }
+        }
+    }
+}
+
+SCENARIO("CLinqCollections can be accessed at a given index with appropriate exceptions")
+{
+    GIVEN("A nonempty collection")
+    {
+        auto constexpr expected = 3;
+        auto collection = CLinqCollection<int>({ 1,2,expected,4 });
+
+        WHEN("Given index is out of range")
+        {
+            THEN("An exception is thrown")
+            {
+                REQUIRE_THROWS(collection.At(INT64_MAX));
+            }
+        }
+
+        WHEN("Given index is in range")
+        {
+            THEN("The correct element is returned")
+            {
+                REQUIRE(expected == collection.At(2));
+            }
+        }
+    }
+
+    GIVEN("An emtpy collection")
+    {
+        auto collection = CLinqCollection<int>::Empty();
+
+        WHEN("At is called")
+        {
+            THEN("An exception is thrown")
+            {
+                REQUIRE_THROWS(collection.At(1));
+            }
+        }
+    }
+}

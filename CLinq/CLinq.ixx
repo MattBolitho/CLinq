@@ -172,6 +172,18 @@ class CLinqCollection
             return _elements.cend();
         }
 
+        /// Gets a const reference to the element at given index in the collection.
+        /// @param index The index.
+        /// @returns A const reference to the element at given index in the collection.
+        /// @throws CLinqException When the index is out of range.
+        TElement const& At(size_type const index) const
+        {
+            ThrowIfEmpty();
+            ThrowIfOutOfRange(index);
+
+            return _elements[index];
+        }
+
         /// Gets the number of elements in the collection.
         /// @returns The number of elements in the collection.
         size_type Count() const noexcept
@@ -179,6 +191,42 @@ class CLinqCollection
             return _elements.size();
         }
 
+        /// Gets a const reference to the first element in the collection.
+        /// @returns A const reference to the first element in the collection.
+        TElement const& First() const
+        {
+            ThrowIfEmpty();
+
+            return _elements.front();
+        }
+
+        /// Gets a const reference to the last element in the collection.
+        /// @returns A const reference to the last element in the collection.
+        TElement const& Last() const
+        {
+            ThrowIfEmpty();
+
+            return _elements.back();
+        }
+
     private:
         std::vector<TElement> _elements;
+
+        void ThrowIfOutOfRange(size_type const index) const
+        {
+            if (index >= _elements.size())
+            {
+                throw CLinqException("Index was out of range."
+                    "Attemped to access index " + std::to_string(index) +
+                    "but collection contains " + std::to_string(_elements.size()) + " elements.");
+            }
+        }
+
+        void ThrowIfEmpty() const
+        {
+            if (_elements.empty())
+            {
+                throw CLinqException("Collection is empty.");
+            }
+        }
 };
