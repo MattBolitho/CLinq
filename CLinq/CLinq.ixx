@@ -8,6 +8,7 @@ module;
 #include <concepts>
 #include <type_traits>
 #include <stdexcept>
+#include <functional>
 export module CLinq;
 
 /// Checks if the given type is iterable. By default, this will be false.
@@ -62,6 +63,9 @@ class CLinqCollection
         using iterator = std::vector<TElement>::iterator;
         using const_iterator = std::vector<TElement>::const_iterator;
         using reverse_iterator = std::vector<TElement>::reverse_iterator;
+
+        /// Type alias for a function that maps elements to true or false.
+        using MatchFunction = std::function<bool(TElement)>;
 
         /// Initializes a new instance of the CLinqCollection class.
         explicit CLinqCollection() noexcept
@@ -189,6 +193,24 @@ class CLinqCollection
         size_type Count() const noexcept
         {
             return _elements.size();
+        }
+
+        /// Gets the number of elements in the collection that match the given match function.
+        /// @param matchFunction The match function.
+        /// @returns The number of elements that match the given match function.
+        size_type Count(MatchFunction const& matchFunction) const
+        {
+            size_type count = 0;
+
+            for (auto& element : _elements)
+            {
+                if (matchFunction(element))
+                {
+                    ++count;
+                }
+            }
+
+            return count;
         }
 
         /// Gets a const reference to the first element in the collection.

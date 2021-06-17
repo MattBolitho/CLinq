@@ -268,3 +268,33 @@ SCENARIO("CLinqCollections can be accessed at a given index with appropriate exc
         }
     }
 }
+
+SCENARIO("CLinqCollections can be get the number of elements contained within")
+{
+    GIVEN("A collection")
+    {
+        auto const elements = std::vector<int>{ 1,2,3 };
+        auto collection = CLinqCollection<int>(elements);
+
+        WHEN("Elements are counted with no match function")
+        {
+            auto const expectedSize = elements.size();
+
+            THEN("Count of all elements is returned")
+            {
+                REQUIRE(expectedSize == collection.Count());
+            }
+        }
+
+        WHEN("Elements are counted with match function")
+        {
+            auto const expectedSize = 1;
+
+            THEN("Count of all elements is returned")
+            {
+                auto actualSize = collection.Count([](int const i) { return i == 1; });
+                REQUIRE(expectedSize == actualSize);
+            }
+        }
+    }
+}
