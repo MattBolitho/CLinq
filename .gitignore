@@ -8,3 +8,6 @@
 **/build
 **/bin
 **/intermediate
+
+# Config
+**/*.DotSettings.user

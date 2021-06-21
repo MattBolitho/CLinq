@@ -3,13 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [🔖 [0.2.1]](https://github.com/MattBolitho/CLinq/releases/tag/CLinq-0.2) - 21/06/2021
+## [🔖 [0.2.1]](https://github.com/MattBolitho/CLinq/releases/tag/CLinq-0.2.1) - 21/06/2021
 ### ✨ Added
 - Header file as an alternative to module consumption.
 
 ### 🙌 Improvements
 - Improves Visual Studio solution format.
 
+<br/>
 
 ## [🔖 [0.2.0]](https://github.com/MattBolitho/CLinq/releases/tag/CLinq-0.2) - 17/06/2021
 ### ✨ Added
@@ -20,6 +21,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### 🙌 Improvements
 - `CLinqCollection<TElement>` can now be constructed with initializer list.
+
+<br/>
 
 ## [🔖 [0.1.0]](https://github.com/MattBolitho/CLinq/releases/tag/CLinq-0.1) - 17/06/2021
 ### ✨ Added
