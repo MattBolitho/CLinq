@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [🔖 [0.2.1]](https://github.com/MattBolitho/CLinq/releases/tag/CLinq-0.2) - 21/06/2021
 ### ✨ Added
-- 
+- Header file as an alternative to module consumption.
 
 ### 🙌 Improvements
 - Improves Visual Studio solution format.

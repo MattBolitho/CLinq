@@ -25,6 +25,7 @@
     <ClCompile Include="..\..\tests\CLinqExceptionTests.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\CLinq.hpp" />
     <ClInclude Include="..\..\ThirdParty\catch\catch.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
