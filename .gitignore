@@ -4,7 +4,7 @@
 .idea
 
 # Build
-cmake-build-*
-build
-bin
-intermediate
+**/cmake-build-*
+**/build
+**/bin
+**/intermediate

@@ -15,17 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CLinq.Tests.cpp">
+    <ClCompile Include="..\..\tests\CLinq.Tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\CLinq\CLinq.ixx">
+    <ClCompile Include="..\..\tests\CLinqCollectionTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CLinqExceptionTests.cpp">
+    <ClCompile Include="..\..\tests\CLinqExceptionTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CLinqCollectionTests.cpp">
+    <ClCompile Include="..\..\module\CLinq.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\ThirdParty\catch\catch.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
